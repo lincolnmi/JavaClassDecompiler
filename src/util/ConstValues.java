@@ -31,6 +31,40 @@ public class ConstValues {
         public static final String NameAndType = "NameAndType";
     }
 
+    public static final class AccessFlag {
+        private static final int ACC_PUBLIC = 0x0001;
+        private static final int ACC_FINAL = 0x0010;
+        private static final int ACC_SUPER = 0x0020;
+        private static final int ACC_INTERFACE = 0x0200;
+        private static final int ACC_ABSTRACT = 0x0400;
+        private static final int ACC_SYNTHETIC = 0x1000;
+        private static final int ACC_ANNOTATION = 0x2000;
+        private static final int ACC_ENUM = 0x4000;
 
+        public static final int[] AccessFlags = {ACC_PUBLIC,ACC_FINAL,ACC_SUPER,ACC_INTERFACE,
+                ACC_ABSTRACT,ACC_SYNTHETIC,ACC_ANNOTATION,ACC_ENUM};
+
+        public static final String[] AccessName = {"public","final","","interface","abstract",
+                "","annotation","enum"};
+    }
+
+    public static final class FieldAccessFlag {
+        private static final int ACC_PUBLIC = 0x0001;
+        private static final int ACC_PRIVATE = 0x0002;
+        private static final int ACC_PROTECTED = 0x0004;
+        private static final int ACC_STATIC = 0x0008;
+        private static final int ACC_FINAl = 0x0010;
+        private static final int ACC_VOLATILE = 0x0040;
+        private static final int ACC_TRANSIENT = 0x0080;
+        private static final int ACC_SYNTHETIC = 0x1000;
+        private static final int ACC_ENUM = 0x4000;
+
+        public static final int[] AccessFlags = {ACC_PUBLIC,ACC_PRIVATE,ACC_PROTECTED,ACC_STATIC,
+                ACC_FINAl,ACC_VOLATILE,ACC_TRANSIENT,ACC_SYNTHETIC,ACC_ENUM};
+
+        public static final String[] AccessName = {"public","private","protected","static","final",
+                "volatile","transient","","enum"};
+
+    }
 
 }
