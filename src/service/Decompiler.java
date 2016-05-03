@@ -13,6 +13,7 @@ import java.util.LinkedHashMap;
 public class Decompiler {
 
     private DataInputStream dataInputStream;
+    private String[] pool_specific_values;
 
     public Decompiler(DataInputStream dataInputStream) {
         this.dataInputStream = dataInputStream;
@@ -25,6 +26,15 @@ public class Decompiler {
             double version = readVersion();
             System.out.println("version is: "+version);
             readConstantContents();
+            String accessFlag = readAccessFlag();
+            System.out.println("accessFlag is: "+accessFlag);
+            String thisClass = readThisClass();
+            System.out.println("this class is: "+thisClass);
+            String superClass = readSuperClass();
+            System.out.println("super class is: "+superClass);
+            String interfaces = readInterfaces();
+            System.out.println("interfaces are: "+interfaces);
+            readFieldsInfo();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -53,7 +63,7 @@ public class Decompiler {
         System.out.println("constant pools count is: "+count);
         String[] pool_types = new String[count];
         String[] pool_values = new String[count];
-        String[] pool_specific_values = new String[count];
+        pool_specific_values = new String[count];
         for (int i=1;i<count;i++) {
             String[] result = readConstantContent();
             pool_types[i] = result[0];
@@ -73,6 +83,14 @@ public class Decompiler {
         }
     }
 
+    /**
+     * fina the root value in the constant pools based on the index
+     * @param pool_types types of constant pool
+     * @param pool_values values of constant pool
+     * @param idx current index
+     * @param count size of constant pools
+     * @return
+     */
     public String getSpecificValue(String[] pool_types,String[] pool_values,int idx, int count) {
         if (idx<0||idx>=count) {
             System.out.println("invalid constant pool index");
@@ -185,6 +203,77 @@ public class Decompiler {
     public short readConstantPoolsCount() throws IOException {
         short count = u2(dataInputStream);
         return count;
+    }
+
+    public String readAccessFlag() throws IOException {
+        short accessFlag = u2(dataInputStream);
+        int size = ConstValues.AccessFlag.AccessFlags.length;
+        StringBuilder builder = new StringBuilder();
+        for (int i=0;i<size;i++) {
+            if ((accessFlag&ConstValues.AccessFlag.AccessFlags[i])!=0) {
+                builder.append(ConstValues.AccessFlag.AccessName[i]);
+                if (i!=size-1) {
+                    builder.append(" ");
+                }
+            }
+        }
+        return builder.toString();
+    }
+
+    public String readThisClass() throws IOException {
+        short index = u2(dataInputStream);
+        return pool_specific_values[index];
+    }
+
+    public String readSuperClass() throws IOException {
+        short index = u2(dataInputStream);
+        return pool_specific_values[index];
+    }
+
+    public String readInterfaces() throws IOException {
+        short count = u2(dataInputStream);
+        System.out.println("interface count is: "+count);
+        StringBuilder builder = new StringBuilder();
+        for (short i=0;i<count;i++) {
+            int index = u2(dataInputStream);
+            builder.append(pool_specific_values[index]);
+            if (i!=count-1) {
+                builder.append(" ");
+            }
+        }
+        return builder.toString();
+    }
+
+    public void readFieldsInfo() throws IOException {
+        short field_count = u2(dataInputStream);
+        for (int i=0;i<field_count;i++) {
+            readFieldInfo();
+        }
+    }
+
+    public void readFieldInfo() throws IOException {
+        String accessFlag = readFieldAccessFlag();
+        short name_index = u2(dataInputStream);
+        String name = pool_specific_values[name_index];
+        short descriptor_index = u2(dataInputStream);
+        String descriptor = pool_specific_values[descriptor_index];
+        short attribute_count = u2(dataInputStream);
+        System.out.println(accessFlag+" "+name+" "+descriptor);
+    }
+
+    private String readFieldAccessFlag() throws IOException {
+        short accessFlag = u2(dataInputStream);
+        StringBuilder builder = new StringBuilder();
+        int size = ConstValues.FieldAccessFlag.AccessFlags.length;
+        for (int i=0;i<size;i++) {
+            if ((accessFlag&ConstValues.FieldAccessFlag.AccessFlags[i])!=0) {
+                builder.append(ConstValues.FieldAccessFlag.AccessName[i]);
+                if (i!=size-1) {
+                    builder.append(" ");
+                }
+            }
+        }
+        return builder.toString();
     }
 
     public static byte u1(DataInputStream dataInputStream) throws IOException {
