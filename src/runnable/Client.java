@@ -20,6 +20,7 @@ public class Client {
             DataInputStream dataInputStream = new DataInputStream(new FileInputStream(new File(file)));
             Decompiler decompiler = new Decompiler(dataInputStream);
             decompiler.analyse();
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
